@@ -19,8 +19,10 @@ public class ServerData {
         userDataMap = new HashMap<>();
     }
 
+    public boolean checkIfUsernameExists(String username) {return userDataMap.containsKey(username); }
+
     public void register(String username, UserData userData) throws InvalidUserException {
-        if (userDataMap.containsKey(username)) {
+        if (checkIfUsernameExists(username)) {
             if (!userDataMap.get(username).address().equals(userData.address())) {
                 LOGGER.log(Level.SEVERE, "User " + username + " tried to register from another IP.");
                 throw new InvalidUserException(username + " has already registered from another address!");
@@ -32,7 +34,7 @@ public class ServerData {
     }
 
     public void unregister(String username, Set<String> files) throws UserNotFoundException {
-        if (userDataMap.containsKey(username)) {
+        if (checkIfUsernameExists(username)) {
             userDataMap.get(username).removeFiles(files);
         } else {
             LOGGER.log(Level.SEVERE, "Nonexistent user " + username + " tried to unregister.");
@@ -41,7 +43,7 @@ public class ServerData {
     }
 
     public void disconnect(String username) throws UserNotFoundException {
-        if (userDataMap.containsKey(username)) {
+        if (checkIfUsernameExists(username)) {
             userDataMap.remove(username);
         } else {
             LOGGER.log(Level.SEVERE, "Nonexistent user " + username + " tried to disconnect.");

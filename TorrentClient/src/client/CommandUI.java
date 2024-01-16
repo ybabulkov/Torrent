@@ -32,7 +32,7 @@ public class CommandUI {
         String username;
         do {
             Scanner scanner = new Scanner(in);
-            out.println("Enter username: ");
+            out.print("Enter username: ");
             username = scanner.nextLine();
 
             if (username.isEmpty()) {
@@ -41,13 +41,14 @@ public class CommandUI {
             }
 
             try {
-                String reply = connection.sendMessage(String.format("connect %s", username));
+                String reply = connection.sendMessage(String.format("connect %s", username)).trim();
                 if (reply.equals("Successful"))
                     return username;
                 else {
                     out.println("The username is already taken. Please try another one.");
                 }
             } catch (ConnectionException e) {
+                e.printStackTrace();
                 out.println("Unable to connect to the server. Please check your connection and try again.");
                 System.exit(-1);
             }
@@ -59,9 +60,24 @@ public class CommandUI {
         MiniServer miniServer;
         do {
             Scanner scanner = new Scanner(in);
-            port = scanner.nextInt();
+            do {
+                try {
+                    out.print("Enter a port number: ");
+                    port = scanner.nextInt();
+                } catch (java.util.InputMismatchException e) {
+                    out.println("Invalid input. Please enter a valid integer for the port.");
+                    scanner.nextLine();
+                    continue;
+                }
+                if (port < 0 || port > 65535) {
+                    out.println("Invalid port number. The port should be between 0 and 65535");
+                    continue;
+                }
+                break;
+            } while (true);
 
-            try (ServerSocket serverSocket = new ServerSocket(port)) {
+            try {
+                ServerSocket serverSocket = new ServerSocket(port);
                 miniServer = new MiniServer(serverSocket, port);
                 return new Tuple<>(miniServer, port);
             } catch (IOException e) {
@@ -70,20 +86,11 @@ public class CommandUI {
         } while(true);
     }
 
-    public ClientActions setUpClient(String serverIp, int serverPort) {
-        Scanner scanner = new Scanner(in);
-
-        out.println("Enter username: ");
-        String username = scanner.nextLine();
-
-        out.println("Enter address file: ");
-        String addressFile = scanner.nextLine();
-
-        out.println("Enter port for the mini server: ");
-        int port = scanner.nextInt();
+    public ClientActions setUpClient(ServerConnection serverConnection, String username,
+                                     MiniServer miniServer, int port) {
 
         ClientProperties clientProperties =
-                ClientProperties.setUpDependencies(serverIp, serverPort, addressFile, port, username);
+                ClientProperties.setUpDependencies(serverConnection, username, miniServer, port);
 
         return new ClientActions(clientProperties, port);
     }
@@ -125,6 +132,7 @@ public class CommandUI {
         String username = commandUI.connectToServer(serverConnection);
         Tuple<MiniServer, Integer> miniServerInfo = commandUI.initializeMiniServerWithPort();
 
-        commandUI.run(commandUI.setUpClient("localhost", 5555));
+        commandUI.run(commandUI.setUpClient(serverConnection, username,
+                miniServerInfo.getFirst(), miniServerInfo.getSecond()));
     }
 }

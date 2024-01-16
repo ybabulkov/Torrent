@@ -8,7 +8,9 @@ import client.download.DownloadService;
 import client.miniserver.MiniServer;
 
 import java.io.IOException;
-import java.net.ServerSocket;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public record ClientProperties(DownloadService downloadService,
                                MiniServer miniServer,
@@ -19,22 +21,45 @@ public record ClientProperties(DownloadService downloadService,
         return "register " + userPort + " " + username + " ";
     }
 
-    public static ClientProperties setUpDependencies(String serverIp, int serverPort,
-                                                     String addressFile, int userPort, String username) {
-        ServerConnection serverConnection = new ServerConnection(serverIp, serverPort);
+    public static Path createAddressFile(String username) {
+        String addressDirectory = "address";
+        String fileName = String.format("%s.txt", username);
+        Path addressPath = Paths.get(String.format("%s\\%s", addressDirectory, fileName));
 
+        if(Files.exists((addressPath))) {
+            try {
+                Files.delete(addressPath);
+            } catch (IOException e) {
+                //TODO: Exception + logger maybe
+                System.out.println("Failed to delete the existing file: " + e.getMessage());
+                return null;
+            }
+        }
 
-        AddressHandler addressHandler = new AddressHandler(new FileData(addressFile), serverConnection);
+        try {
+            Files.createDirectories(addressPath.getParent());
+            Files.createFile(addressPath);
+
+            return addressPath;
+        } catch (IOException e) {
+            //TODO: Log error
+            System.out.println("Failed to create address file: " + e.getMessage());
+            return null;
+        }
+    }
+
+    public static ClientProperties setUpDependencies(ServerConnection serverConnection, String username,
+                                                     MiniServer miniServer, int port) {
+
+        Path addressPath = createAddressFile(username);
+
+        AddressHandler addressHandler = new AddressHandler(new FileData(addressPath), serverConnection);
         AddressUpdaterThread addressUpdaterThread = new AddressUpdaterThread(addressHandler);
         addressUpdaterThread.setDaemon(true);
 
         DownloadService downloadService =
-                new DownloadService(addressHandler, serverConnection, getRegisterCommandPrefix(userPort, username));
-        try (ServerSocket serverSocket = new ServerSocket(userPort)) {
-            MiniServer miniServer = new MiniServer(serverSocket, userPort);
-            return new ClientProperties(downloadService, miniServer, addressUpdaterThread, serverConnection);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+                new DownloadService(addressHandler, serverConnection, getRegisterCommandPrefix(port, username));
+
+        return new ClientProperties(downloadService, miniServer, addressUpdaterThread, serverConnection);
     }
 }

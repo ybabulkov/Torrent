@@ -11,6 +11,8 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -30,7 +32,7 @@ public class MiniServer extends Thread {
         LOGGER.log(Level.INFO, "Mini-server created.");
     }
 
-    private void sendFile(String pathToFile, DataOutputStream socketOutput) throws IOException {
+    private void sendFile(Path pathToFile, DataOutputStream socketOutput) throws IOException {
         FileData file = new FileData(pathToFile);
         socketOutput.writeLong(file.getSize());
         InputStream inputStream = file.newInputStream();
@@ -51,7 +53,7 @@ public class MiniServer extends Thread {
             if (pathToFile.isBlank()) {
                 return;
             }
-            sendFile(pathToFile, socketOutput);
+            sendFile(Paths.get(pathToFile), socketOutput);
         } catch (IOException exception) {
             LOGGER.log(Level.SEVERE, "Sending file failed: "
                     + exception.getMessage(), exception);
@@ -73,8 +75,10 @@ public class MiniServer extends Thread {
 
     public void close() {
         this.interrupt();
+
         try (Socket poisonSocket = new Socket("localhost", port);
                 PrintWriter writer = new PrintWriter(poisonSocket.getOutputStream(), true)) {
+            serverSocket.close();
             writer.println("");
         } catch (IOException exception) {
             LOGGER.log(Level.SEVERE, "Closing server failed: "

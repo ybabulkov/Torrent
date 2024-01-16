@@ -10,29 +10,33 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class FileData {
-    private final Path addressFile;
+    private final Path addressPath;
 
     public FileData(String addressFilePath) {
-        addressFile = Paths.get(addressFilePath);
+        addressPath = Paths.get(addressFilePath);
+    }
+
+    public FileData(Path addressFilePath) {
+        addressPath = addressFilePath;
     }
 
     public Writer newWriter() throws IOException {
-        return Files.newBufferedWriter(addressFile);
+        return Files.newBufferedWriter(addressPath);
     }
 
     public Reader newReader() throws IOException {
-        return Files.newBufferedReader(addressFile);
+        return Files.newBufferedReader(addressPath);
     }
 
     public long getSize() throws IOException {
-        return Files.size(addressFile);
+        return Files.size(addressPath);
     }
 
     public InputStream newInputStream() throws IOException {
-        return Files.newInputStream(addressFile);
+        return Files.newInputStream(addressPath);
     }
 
     public OutputStream newOutputStream() throws IOException {
-        return Files.newOutputStream(addressFile);
+        return Files.newOutputStream(addressPath);
     }
 }

@@ -101,6 +101,12 @@ public class CommandExecutor {
         return builder.toString();
     }
 
+    public String connect(String command) {
+        String[] words = command.split(" ");
+        String username = words[1];
+        return !serverData.checkIfUsernameExists(username) ? "Successful" : "Unsuccessful";
+    }
+
     public String execute(SocketChannel channel, String command, InetAddress ip) {
         if (command.startsWith("register") && isValid(command)) {
             return SINGLE_LINE_PREFIX + register(channel, command, ip);
@@ -113,6 +119,9 @@ public class CommandExecutor {
         }
         if (command.equals("list-addresses")) {
             return buildStringFrom(serverData.listAddresses());
+        }
+        if(command.startsWith("connect") && isValid(command)) {
+            return SINGLE_LINE_PREFIX + connect(command);
         }
         return SINGLE_LINE_PREFIX + "Unknown command!";
     }
