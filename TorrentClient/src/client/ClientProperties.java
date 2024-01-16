@@ -15,7 +15,8 @@ import java.nio.file.Paths;
 public record ClientProperties(DownloadService downloadService,
                                MiniServer miniServer,
                                AddressUpdaterThread addressUpdaterThread,
-                               ServerConnection serverConnection) {
+                               ServerConnection serverConnection,
+                               String username) {
 
     private static String getRegisterCommandPrefix(int userPort, String username) {
         return "register " + userPort + " " + username + " ";
@@ -60,6 +61,6 @@ public record ClientProperties(DownloadService downloadService,
         DownloadService downloadService =
                 new DownloadService(addressHandler, serverConnection, getRegisterCommandPrefix(port, username));
 
-        return new ClientProperties(downloadService, miniServer, addressUpdaterThread, serverConnection);
+        return new ClientProperties(downloadService, miniServer, addressUpdaterThread, serverConnection, username);
     }
 }

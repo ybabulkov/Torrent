@@ -3,8 +3,13 @@ package client;
 import client.connection.ConnectionException;
 import client.download.DownloadException;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class ClientActions {
     private static final Logger LOGGER = Logger.getLogger(ClientActions.class.getName());
@@ -61,7 +66,21 @@ public class ClientActions {
     }
 
     public String register(String command) {
-        return serverCommand(insertPort(command));
+        String[] words = command.split(" ");
+        List<String> files = Arrays.asList(words).subList(1, words.length);
+
+        List<String> existingFiles = files.stream()
+                .peek(fileName -> {
+                    if (!Files.exists(Paths.get(fileName))) {
+                        System.out.println(fileName + " does not exist.");
+                    }
+                })
+                .filter(fileName -> Files.exists(Paths.get(fileName)))
+                .collect(Collectors.toList());
+
+        String newCommand = String.format("register %d %s ", userPort, properties.username()) + String.join(" ", existingFiles);
+
+        return serverCommand(newCommand);
     }
 
     public String serverCommand(String command) {
