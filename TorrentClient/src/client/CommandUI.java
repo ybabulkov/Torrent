@@ -95,23 +95,32 @@ public class CommandUI {
         return new ClientActions(clientProperties, port);
     }
 
+    private String extractCommandPrefix(String command) {
+        int spaceIndex = command.trim().indexOf(' ');
+        return (spaceIndex != -1) ? command.substring(0, spaceIndex) : command;
+    }
+
     private boolean consoleReader(Scanner scanner, ClientActions clientActions) {
         String command = scanner.nextLine();
 
-        if (command.equals("disconnect")) {
-            out.println(clientActions.stop());
-            return false;
+        boolean keepActive = true;
+        String response;
+
+        String commandPrefix = extractCommandPrefix(command);
+
+        switch (commandPrefix) {
+            case "disconnect" -> {
+                response = clientActions.stop();
+                keepActive = false;
+            }
+            case "download" -> response = clientActions.download(command);
+            case "register" -> response = clientActions.register(command);
+            case "unregister" -> response = clientActions.unregister(command);
+            default -> response = clientActions.serverCommand(command);
         }
-        if (command.startsWith("download")) {
-            out.println(clientActions.download(command));
-            return true;
-        }
-        if (command.startsWith("register")) {
-            out.println(clientActions.register(command));
-            return true;
-        }
-        out.println(clientActions.serverCommand(command));
-        return true;
+
+        out.println(response);
+        return keepActive;
     }
 
     public void run(ClientActions clientActions) {

@@ -83,6 +83,10 @@ public class ClientActions {
         return serverCommand(newCommand);
     }
 
+    public String unregister(String command) {
+        return serverCommand(command.replaceFirst(" ", String.format(" %s ", properties.username())));
+    }
+
     public String serverCommand(String command) {
         try {
             return properties.serverConnection().sendMessage(command);

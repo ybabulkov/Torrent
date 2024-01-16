@@ -107,23 +107,33 @@ public class CommandExecutor {
         return !serverData.checkIfUsernameExists(username) ? "Successful" : "Unsuccessful";
     }
 
+    private String extractCommandPrefix(String command) {
+        int spaceIndex = command.indexOf(' ');
+        return (spaceIndex != -1) ? command.substring(0, spaceIndex) : command;
+    }
+
     public String execute(SocketChannel channel, String command, InetAddress ip) {
-        if (command.startsWith("register") && isValid(command)) {
-            return SINGLE_LINE_PREFIX + register(channel, command, ip);
-        }
-        if (command.startsWith("unregister") && isValid(command)) {
-            return SINGLE_LINE_PREFIX + unregister(channel, command);
-        }
-        if (command.equals("list-files")) {
-            return buildStringFrom(serverData.listFiles());
-        }
-        if (command.equals("list-addresses")) {
-            return buildStringFrom(serverData.listAddresses());
-        }
-        if(command.startsWith("connect") && isValid(command)) {
-            return SINGLE_LINE_PREFIX + connect(command);
-        }
-        return SINGLE_LINE_PREFIX + "Unknown command!";
+        String response = null;
+
+        switch (extractCommandPrefix(command)) {
+                case "register" -> {
+                    if(isValid(command))
+                        response = SINGLE_LINE_PREFIX + register(channel, command, ip);
+                }
+                case "unregister" -> {
+                    if(isValid(command))
+                        response = SINGLE_LINE_PREFIX + unregister(channel, command);
+                }
+                case "list-files" -> response = buildStringFrom(serverData.listFiles());
+                case "list-addresses" -> response = buildStringFrom(serverData.listAddresses());
+                case "connect" -> {
+                    if(isValid(command))
+                        response = SINGLE_LINE_PREFIX + connect(command);
+                }
+                default -> response = SINGLE_LINE_PREFIX + "Unknown command!";
+            }
+
+        return response == null ? SINGLE_LINE_PREFIX + "Unknown command!" : response;
     }
 
     public void disconnect(SocketChannel channel) {
