@@ -121,7 +121,10 @@ public class CommandUI {
                 response = clientActions.stop();
                 keepActive = false;
             }
-            case "download" -> response = clientActions.download(command);
+            case "download" -> {
+                response = clientActions.download(command);
+
+            }
             case "register" -> response = clientActions.register(command);
             case "unregister" -> response = clientActions.unregister(command);
             default -> response = clientActions.serverCommand(command);

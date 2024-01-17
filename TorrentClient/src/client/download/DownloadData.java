@@ -12,6 +12,7 @@ import java.nio.file.InvalidPathException;
 import java.nio.file.NotDirectoryException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Scanner;
 
 
 public record DownloadData(String ip, int port, String serverPath, String clientPath) {
@@ -49,7 +50,19 @@ public record DownloadData(String ip, int port, String serverPath, String client
         Path filePath = Paths.get(filePathString);
 
         if(Files.exists(filePath)) {
-            throw new FileAlreadyExistsException("A file with the same name already exists in the specified directory!");
+            System.out.println("A file with the same name already exists in the specified directory!\n" +
+                    "Do you want to replace it? (yes/no)");
+            Scanner scanner = new Scanner(System.in);
+            String response = scanner.nextLine();
+            if(response.equals("yes")) {
+                try {
+                    Files.delete(filePath);
+                } catch (IOException e) {
+                    throw new IOException("An error occurred while deleting the file!");
+                }
+            }
+            else
+                throw new FileAlreadyExistsException("Please, provide new directory!");
         }
 
         return filePathString;
