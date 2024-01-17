@@ -101,6 +101,14 @@ public class CommandExecutor {
         return builder.toString();
     }
 
+    private String parseLines( String messageIfEmpty, Set<String> lines) {
+        if(lines.isEmpty())
+            return messageIfEmpty;
+
+        return buildStringFrom(lines);
+    }
+
+
     public String connect(String command) {
         String[] words = command.split(" ");
         String username = words[1];
@@ -124,8 +132,12 @@ public class CommandExecutor {
                     if(isValid(command))
                         response = SINGLE_LINE_PREFIX + unregister(channel, command);
                 }
-                case "list-files" -> response = buildStringFrom(serverData.listFiles());
-                case "list-addresses" -> response = buildStringFrom(serverData.listAddresses());
+                case "list-files" -> response =
+                        parseLines(String.format("%sThere are no files registered!", SINGLE_LINE_PREFIX),
+                                serverData.listFiles());
+                case "list-addresses" -> response =
+                        parseLines(String.format("%sThere are no addresses available!", SINGLE_LINE_PREFIX),
+                                serverData.listAddresses());
                 case "connect" -> {
                     if(isValid(command))
                         response = SINGLE_LINE_PREFIX + connect(command);
