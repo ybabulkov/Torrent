@@ -105,8 +105,8 @@ public class CommandUI {
         System.out.println("1. 'register <file1, file2, file3, ..., fileN>' - announce files for download.");
         System.out.println("2. 'unregister <file1, file2, file3, ..., fileN>' - declare files that can't be downloaded.");
         System.out.println("3. 'list-files' - view available files and the users from which they can be downloaded.");
-        System.out.println("4. 'download <user> <path to file on user> [<path to save>]' - download " +
-                "<path to file on user> from <user> in <path to save>. If <path to save> is omitted, " +
+        System.out.println("4. 'download <user> <path to file on user> [<dir to save>]' - download " +
+                "<path to file on user> from <user> in <dir to save>. If <dir to save> is omitted, " +
                 "store it in the current directory.");
         System.out.println("5. 'disconnect' - disconnect from the server.");
     }

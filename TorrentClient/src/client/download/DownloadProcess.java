@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.nio.file.Paths;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -61,7 +62,7 @@ public class DownloadProcess implements Runnable {
             receiveFile(socketInput, fileOutput);
             fileOutput.close();
 
-            registerFileOnServer(downloadData.clientPath());
+            registerFileOnServer(Paths.get(downloadData.clientPath()).getFileName().toString());
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Download failed: " + e.getMessage(), e);
         }

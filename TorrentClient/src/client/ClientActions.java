@@ -3,6 +3,8 @@ package client;
 import client.connection.ConnectionException;
 import client.download.DownloadException;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.logging.Level;
@@ -51,14 +53,10 @@ public class ClientActions {
         return "Disconnected from the server!";
     }
 
-    private String insertPort(String command) {
-        return command.replaceFirst(" ", " " + userPort + " ");
-    }
-
     public String download(String command) {
         try {
             properties.downloadService().executeCommand(command);
-        } catch (DownloadException e) {
+        } catch (DownloadException | IOException e) {
             LOGGER.log(Level.SEVERE, "Downloading failed: " + e.getMessage(), e);
             return e.getMessage();
         }

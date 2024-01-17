@@ -4,6 +4,8 @@ import client.LogHandler;
 import client.address.AddressHandler;
 import client.connection.ServerConnection;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -29,13 +31,13 @@ public class DownloadService {
 
     }
 
-    public void executeCommand(String command) throws DownloadException {
+    public void executeCommand(String command) throws DownloadException, IOException {
         DownloadData downloadData;
         try {
             downloadData = DownloadData.parseDownloadCommand(addressHandler, command);
-        } catch (DownloadException e) {
+        } catch (DownloadException | IOException e) {
             LOGGER.log(Level.SEVERE, "Parsing of the command failed: " + e.getMessage(), e);
-            throw new DownloadException(e);
+            throw e;
         }
 
         DownloadProcess downloadProcess =
