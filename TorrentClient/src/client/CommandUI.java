@@ -2,6 +2,7 @@ package client;
 
 import client.connection.ConnectionException;
 import client.connection.ServerConnection;
+import client.lib.CommandExtractor;
 import client.lib.Tuple;
 import client.miniserver.MiniServer;
 
@@ -95,18 +96,13 @@ public class CommandUI {
         return new ClientActions(clientProperties, port);
     }
 
-    private String extractCommandPrefix(String command) {
-        int spaceIndex = command.trim().indexOf(' ');
-        return (spaceIndex != -1) ? command.substring(0, spaceIndex) : command;
-    }
-
     private void printHelp() {
         System.out.println("\nAvailable Commands:");
         System.out.println("1. 'register <file1, file2, file3, ..., fileN>' - announce files for download.");
         System.out.println("2. 'unregister <file1, file2, file3, ..., fileN>' - declare files that can't be downloaded.");
         System.out.println("3. 'list-files' - view available files and the users from which they can be downloaded.");
-        System.out.println("4. 'download <user> <path to file on user> [<dir to save>]' - download " +
-                "<path to file on user> from <user> in <dir to save>. If <dir to save> is omitted, " +
+        System.out.println("4. 'download <path to file> [<dir to save>]' - download " +
+                "<path to file> in <dir to save>. If <dir to save> is omitted, " +
                 "store it in the current directory.");
         System.out.println("5. 'disconnect' - disconnect from the server.");
     }
@@ -118,7 +114,7 @@ public class CommandUI {
         boolean keepActive = true;
         String response;
 
-        String commandPrefix = extractCommandPrefix(command);
+        String commandPrefix = CommandExtractor.extractCommandPrefix(command);
 
         switch (commandPrefix) {
             case "disconnect" -> {

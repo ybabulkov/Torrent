@@ -3,6 +3,7 @@ package server;
 import server.exceptions.InvalidUserException;
 import server.exceptions.UserNotFoundException;
 
+import java.io.FileNotFoundException;
 import java.net.InetAddress;
 import java.nio.channels.SocketChannel;
 import java.util.Arrays;
@@ -91,6 +92,19 @@ public class CommandExecutor {
         return "File(s) successfully unregistered!";
     }
 
+    private String download(String command) {
+        String[] words = command.split("\\s+");
+
+        String address;
+        try {
+            address = serverData.getAddressOfFile(words[1]);
+        } catch (FileNotFoundException e) {
+            return e.getMessage();
+        }
+
+        return command.replaceFirst("\\s+", String.format(" %s ", address));
+    }
+
     private String buildStringFrom(Set<String> lines) {
         StringBuilder builder = new StringBuilder();
         builder.append(lines.size()).append(System.lineSeparator());
@@ -141,6 +155,10 @@ public class CommandExecutor {
                 case "connect" -> {
                     if(isValid(command))
                         response = SINGLE_LINE_PREFIX + connect(command);
+                }
+                case "download" -> {
+                    if(isValid(command))
+                        response = SINGLE_LINE_PREFIX + download(command);
                 }
                 default -> response = SINGLE_LINE_PREFIX + "Unknown command!";
             }

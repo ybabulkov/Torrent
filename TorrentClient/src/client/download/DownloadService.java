@@ -34,7 +34,7 @@ public class DownloadService {
     public void executeCommand(String command) throws DownloadException, IOException {
         DownloadData downloadData;
         try {
-            downloadData = DownloadData.parseDownloadCommand(addressHandler, command);
+            downloadData = DownloadData.parseDownloadCommand(command);
         } catch (DownloadException | IOException e) {
             LOGGER.log(Level.SEVERE, "Parsing of the command failed: " + e.getMessage(), e);
             throw e;

@@ -2,6 +2,7 @@ package client;
 
 import client.connection.ConnectionException;
 import client.download.DownloadException;
+import client.lib.CommandExtractor;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -54,8 +55,14 @@ public class ClientActions {
     }
 
     public String download(String command) {
+        String response = serverCommand(command);
+        String responseCommand = CommandExtractor.extractCommandPrefix(response);
+        if(!responseCommand.equals("download")) {
+            return response;
+        }
+
         try {
-            properties.downloadService().executeCommand(command);
+            properties.downloadService().executeCommand(response);
         } catch (DownloadException | IOException e) {
             LOGGER.log(Level.SEVERE, "Downloading failed: " + e.getMessage(), e);
             return e.getMessage();

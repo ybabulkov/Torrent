@@ -55,22 +55,15 @@ public record DownloadData(String ip, int port, String serverPath, String client
         return filePathString;
     }
 
-    public static DownloadData parseDownloadCommand(AddressHandler addressHandler, String command)
+    public static DownloadData parseDownloadCommand(String command)
             throws DownloadException, IOException {
-        String[] words = command.split(" ");
+        String[] words = command.split("\\s+");
 
-        if (words.length > 4 || words.length < 3) {
+        if (words.length > 3 || words.length < 2) {
             throw new DownloadException("Incorrect format of 'download' command!");
         }
 
-        String address;
-        try {
-            address = addressHandler.addressOf(words[1]);
-        } catch (AddressException e) {
-            throw new DownloadException("The user is not found!");
-        }
-
-        AddressPair pair = parseAddress(address);
+        AddressPair addressPair = parseAddress(words[1]);
 
         if(!Files.exists(Paths.get(words[2]))) {
             throw new FileNotFoundException("The file is currently unavailable!");
@@ -83,6 +76,6 @@ public record DownloadData(String ip, int port, String serverPath, String client
         String downloadFilePath = getDownloadDirectoryPath(Paths.get(words[2]).getFileName().toString(),
                 downloadPathDirectory);
 
-        return new DownloadData(pair.ip(), pair.port(), words[2], downloadFilePath);
+        return new DownloadData(addressPair.ip(), addressPair.port(), words[2], downloadFilePath);
     }
 }

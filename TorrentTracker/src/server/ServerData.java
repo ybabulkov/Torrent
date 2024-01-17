@@ -3,6 +3,7 @@ package server;
 import server.exceptions.InvalidUserException;
 import server.exceptions.UserNotFoundException;
 
+import java.io.FileNotFoundException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -31,6 +32,23 @@ public class ServerData {
         } else {
             userDataMap.put(username, userData);
         }
+    }
+
+    public String getAddressOfFile(String fileName) throws FileNotFoundException {
+        String address = null;
+        for (Map.Entry<String, UserData> entry : userDataMap.entrySet()) {
+            for (String file : entry.getValue().files()) {
+                if (file.equals(fileName)) {
+                    address = userDataMap.get(entry.getKey()).address();
+                }
+            }
+        }
+
+        if(address == null) {
+            throw new FileNotFoundException("The specified file is not registered!");
+        }
+
+        return address;
     }
 
     public void unregister(String username, Set<String> files) throws UserNotFoundException {
