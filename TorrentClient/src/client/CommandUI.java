@@ -28,6 +28,7 @@ public class CommandUI {
             connection.connect();
         } catch (ConnectionException e) {
             out.println("Unable to connect to the server. Please check your connection and try again.");
+            System.exit(-1);
         }
 
         String username;
@@ -103,7 +104,7 @@ public class CommandUI {
         System.out.println("3. 'list-files' - view available files and the users from which they can be downloaded.");
         System.out.println("4. 'download <path to file> [<dir to save>]' - download " +
                 "<path to file> in <dir to save>. If <dir to save> is omitted, " +
-                "store it in the current directory.");
+                "store it in the 'downloads' directory.");
         System.out.println("5. 'disconnect' - disconnect from the server.");
     }
 

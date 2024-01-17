@@ -72,7 +72,7 @@ public record DownloadData(String ip, int port, String serverPath, String client
             throws DownloadException, IOException {
         String[] words = command.split("\\s+");
 
-        if (words.length > 3 || words.length < 2) {
+        if (words.length > 4 || words.length < 3) {
             throw new DownloadException("Incorrect format of 'download' command!");
         }
 
