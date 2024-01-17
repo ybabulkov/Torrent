@@ -82,6 +82,10 @@ public class ClientActions {
                 .filter(fileName -> Files.exists(Paths.get(fileName)))
                 .collect(Collectors.toList());
 
+        if (existingFiles.isEmpty()) {
+            return "";
+        }
+
         String newCommand = String.format("register %d %s ", userPort, properties.username()) + String.join(" ", existingFiles);
 
         return serverCommand(newCommand);

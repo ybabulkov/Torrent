@@ -9,6 +9,7 @@ import java.nio.channels.SocketChannel;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -41,9 +42,18 @@ public class CommandExecutor {
         return false;
     }
 
-    private boolean isValid(String command) {
-        String[] words = command.split(" ");
-        return words.length > 1;
+    private boolean isValidExactLength(String command, Integer... allowedLengths) {
+        List<Integer> allowedLengthsList = Arrays.asList(allowedLengths);
+
+        String[] commandParts = command.trim().split("\\s+");
+
+        return allowedLengthsList.contains(commandParts.length);
+    }
+
+    private boolean isValidMinimumArguments(String command, int minNumberArgs) {
+        String[] commandParts = command.trim().split("\\s+");
+
+        return commandParts.length >= minNumberArgs;
     }
 
     private String register(SocketChannel channel, String command, InetAddress ip) {
@@ -138,30 +148,35 @@ public class CommandExecutor {
         String response = null;
 
         switch (extractCommandPrefix(command)) {
-                case "register" -> {
-                    if(isValid(command))
-                        response = SINGLE_LINE_PREFIX + register(channel, command, ip);
-                }
-                case "unregister" -> {
-                    if(isValid(command))
-                        response = SINGLE_LINE_PREFIX + unregister(channel, command);
-                }
-                case "list-files" -> response =
-                        parseLines(String.format("%sThere are no files registered!", SINGLE_LINE_PREFIX),
-                                serverData.listFiles());
-                case "list-addresses" -> response =
-                        parseLines(String.format("%sThere are no addresses available!", SINGLE_LINE_PREFIX),
-                                serverData.listAddresses());
-                case "connect" -> {
-                    if(isValid(command))
-                        response = SINGLE_LINE_PREFIX + connect(command);
-                }
-                case "download" -> {
-                    if(isValid(command))
-                        response = SINGLE_LINE_PREFIX + download(command);
-                }
-                default -> response = SINGLE_LINE_PREFIX + "Unknown command!";
+            case "register" -> {
+                if(isValidMinimumArguments(command, 2))
+                    response = SINGLE_LINE_PREFIX + register(channel, command, ip);
             }
+            case "unregister" -> {
+                if(isValidMinimumArguments(command, 2))
+                    response = SINGLE_LINE_PREFIX + unregister(channel, command);
+            }
+            case "list-files" -> {
+                if(isValidExactLength(command, 1))
+                    response = parseLines(String.format("%sThere are no files registered!", SINGLE_LINE_PREFIX),
+                            serverData.listFiles());
+            }
+            case "list-addresses" -> {
+                if(isValidExactLength(command, 1))
+                    response =
+                            parseLines(String.format("%sThere are no addresses available!", SINGLE_LINE_PREFIX),
+                                    serverData.listAddresses());
+            }
+            case "connect" -> {
+                if(isValidExactLength(command, 2))
+                    response = SINGLE_LINE_PREFIX + connect(command);
+            }
+            case "download" -> {
+                if(isValidExactLength(command, 2, 3))
+                    response = SINGLE_LINE_PREFIX + download(command);
+            }
+            default -> response = SINGLE_LINE_PREFIX + "Unknown command!";
+        }
 
         return response == null ? SINGLE_LINE_PREFIX + "Unknown command!" : response;
     }
