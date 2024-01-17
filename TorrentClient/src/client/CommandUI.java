@@ -100,7 +100,19 @@ public class CommandUI {
         return (spaceIndex != -1) ? command.substring(0, spaceIndex) : command;
     }
 
+    private void printHelp() {
+        System.out.println("\nAvailable Commands:");
+        System.out.println("1. 'register <file1, file2, file3, ..., fileN>' - announce files for download.");
+        System.out.println("2. 'unregister <file1, file2, file3, ..., fileN>' - declare files that can't be downloaded.");
+        System.out.println("3. 'list-files' - view available files and the users from which they can be downloaded.");
+        System.out.println("4. 'download <user> <path to file on user> [<path to save>]' - download " +
+                "<path to file on user> from <user> in <path to save>. If <path to save> is omitted, " +
+                "store it in the current directory.");
+        System.out.println("5. 'disconnect' - disconnect from the server.");
+    }
+
     private boolean consoleReader(Scanner scanner, ClientActions clientActions) {
+        printHelp();
         String command = scanner.nextLine();
 
         boolean keepActive = true;
@@ -136,6 +148,8 @@ public class CommandUI {
     }
 
     public static void main(String[] args) {
+        System.out.println("Welcome to the Kol-Yo Torrent Application!");
+
         ServerConnection serverConnection = new ServerConnection(SERVER_IP, SERVER_PORT);
         CommandUI commandUI = new CommandUI(System.in, System.out);
         String username = commandUI.connectToServer(serverConnection);
