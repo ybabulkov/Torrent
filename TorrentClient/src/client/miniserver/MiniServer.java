@@ -3,12 +3,7 @@ package client.miniserver;
 import client.LogHandler;
 import client.file.FileData;
 
-import java.io.BufferedReader;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.file.Path;
@@ -20,7 +15,7 @@ public class MiniServer extends Thread {
     private static final Logger LOGGER = Logger.getLogger(MiniServer.class.getName());
     private static final int CHUNK_SIZE = 1024;
 
-    public Boolean hasStarted = true;
+    public final Boolean hasStarted = true;
     private final ServerSocket serverSocket;
 
     private final int port;

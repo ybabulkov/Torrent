@@ -1,10 +1,10 @@
 package client;
 
-import client.file.FileData;
 import client.address.AddressHandler;
 import client.address.AddressUpdaterThread;
 import client.connection.ServerConnection;
 import client.download.DownloadService;
+import client.file.FileData;
 import client.miniserver.MiniServer;
 
 import java.io.IOException;
@@ -59,7 +59,7 @@ public record ClientProperties(DownloadService downloadService,
         addressUpdaterThread.setDaemon(true);
 
         DownloadService downloadService =
-                new DownloadService(addressHandler, serverConnection, getRegisterCommandPrefix(port, username));
+                new DownloadService(serverConnection, getRegisterCommandPrefix(port, username));
 
         return new ClientProperties(downloadService, miniServer, addressUpdaterThread, serverConnection, username);
     }

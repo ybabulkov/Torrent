@@ -50,7 +50,6 @@ public class CommandUI {
                     out.println("The username is already taken. Please try another one.");
                 }
             } catch (ConnectionException e) {
-                e.printStackTrace();
                 out.println("Unable to connect to the server. Please check your connection and try again.");
                 System.exit(-1);
             }
@@ -122,10 +121,7 @@ public class CommandUI {
                 response = clientActions.stop();
                 keepActive = false;
             }
-            case "download" -> {
-                response = clientActions.download(command);
-
-            }
+            case "download" -> response = clientActions.download(command);
             case "register" -> response = clientActions.register(command);
             case "unregister" -> response = clientActions.unregister(command);
             default -> response = clientActions.serverCommand(command);
@@ -156,6 +152,6 @@ public class CommandUI {
         Tuple<MiniServer, Integer> miniServerInfo = commandUI.initializeMiniServerWithPort();
 
         commandUI.run(commandUI.setUpClient(serverConnection, username,
-                miniServerInfo.getFirst(), miniServerInfo.getSecond()));
+                miniServerInfo.first(), miniServerInfo.second()));
     }
 }

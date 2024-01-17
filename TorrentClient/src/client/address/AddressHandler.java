@@ -5,7 +5,6 @@ import client.connection.ConnectionException;
 import client.connection.ServerConnection;
 import client.file.FileData;
 
-import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.util.logging.Level;
@@ -21,24 +20,6 @@ public class AddressHandler {
         this.fileData = fileData;
         this.serverConnection = serverConnection;
         LogHandler.registerLogger(LOGGER, "logs/addresses.log");
-    }
-
-    public String addressOf(String user) throws AddressException {
-        synchronized (fileData) {
-            try {
-                BufferedReader fileReader = new BufferedReader(fileData.newReader());
-                String address = fileReader
-                        .lines()
-                        .filter(s -> s.startsWith(user + ' '))
-                        .findFirst().orElseThrow(() -> new AddressException("User not found!"))
-                        .substring(user.length() + 3);
-                fileReader.close();
-                return address;
-            } catch (IOException exception) {
-                LOGGER.log(Level.SEVERE, "Address file reading failed: " + exception.getMessage(), exception);
-                throw new AddressException(exception.getMessage(), exception);
-            }
-        }
     }
 
     public void update() throws IOException, AddressException {
