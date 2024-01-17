@@ -1,10 +1,6 @@
 package client.file;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.Reader;
-import java.io.Writer;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -22,10 +18,6 @@ public class FileData {
 
     public Writer newWriter() throws IOException {
         return Files.newBufferedWriter(addressPath);
-    }
-
-    public Reader newReader() throws IOException {
-        return Files.newBufferedReader(addressPath);
     }
 
     public long getSize() throws IOException {

@@ -1,10 +1,8 @@
 package client.download;
 
 import client.LogHandler;
-import client.address.AddressHandler;
 import client.connection.ServerConnection;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -16,16 +14,14 @@ import java.util.logging.Logger;
 public class DownloadService {
     private static final Logger LOGGER = Logger.getLogger(DownloadService.class.getName());
 
-    private final AddressHandler addressHandler;
     private final ExecutorService executorService;
 
     private final ServerConnection serverConnection;
     private final String registerCommandPrefix;
 
-    public DownloadService(AddressHandler addressHandler, ServerConnection serverConnection, String registerCommandPrefix) {
+    public DownloadService(ServerConnection serverConnection, String registerCommandPrefix) {
         this.serverConnection = serverConnection;
         this.registerCommandPrefix = registerCommandPrefix;
-        this.addressHandler = addressHandler;
         executorService = Executors.newFixedThreadPool(5);
         LogHandler.registerLogger(LOGGER, "logs/downloads.log");
 
